@@ -44,23 +44,28 @@ RUN curl -L https://github.com/lh3/minimap2/releases/download/v${MINIMAP2_VER}/m
 ENV PATH="${PATH}:/minimap2-${MINIMAP2_VER}_x64-linux" \
 LC_ALL=C
 
-#after this is working move it into the rest of the apt-get
-#RUN apt-get install md5 
-
 # install miniconda
 ENV CONDA_DIR /opt/conda
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh -O /miniconda.sh && \
-    /bin/bash /miniconda.sh -b -p /opt/conda
-
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda
 ENV PATH=$CONDA_DIR/bin:$PATH
 
+#RUN conda update conda
 # install syri and plotsr
-RUN conda create -n syri_env -c bioconda syri
-RUN conda activate syri_env
-RUN conda install -c bioconda plotsr 
+COPY environment.yml .
+RUN conda env create -f environment.yml
+
+
+RUN echo "conda activate syri_env" > ~/.bashrc
+SHELL ["/bin/bash", "--login", "-c"]
 
 # set final working directory as /data
+COPY genomes.txt .
+COPY entrypoint.sh .
+
 WORKDIR /data
+
+ENTRYPOINT ["../entrypoint.sh"]
 
 # test layer
 FROM app as test
