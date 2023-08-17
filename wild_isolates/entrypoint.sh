@@ -1,10 +1,30 @@
 #!/bin/bash
-
 set -euo pipefail
+
+FILE=(
+'n2_nomito.fa'
+'vc_2010_nomito.fa'
+'hawaiian_nomito.fa'
+'hawaii.fa'
+'wuhan.fa'
+)
+
+LABEL=(
+'N2'
+'VC2010'
+'CB4856'
+'hawaii'
+'wuhan'
+)
 
 cd /data
 
-minimap2 --eqx -ax asm5 -a n2_nomito.fa vc2010_nomito.fa  > r_n2_q_vc2010.sam
+SAMFILE=()
+for i {1..${#FILE[@]}}
+do
+    minimap2 --eqx -ax asm5 -a $FILE[i-1] $FILE[i]  > "r_$LABEL[i-1]_q_$LABEL[i].sam"
+    $SAMFILE[i-1]="r_$LABEL[i-1]_q_$LABEL[i].sam"
+done
 
 set +euo pipefail
 conda init bash
@@ -15,9 +35,23 @@ set -euo pipefail
 mkdir tmp
 cd tmp
 
-syri -c ../r_n2_q_vc2010.sam -F S -r ../n2_nomito.fa -q ../vc2010_nomito.fa
+OUTFILE=()
+for i {1..${#FILE[@]}}
+do
+    syri -c $SAMFILE[i-1] -F S -r $FILE[i-1] -q $FILE[i] --prefix "$SAMFILE[i-1]_"
+    $OUTFILE[i-1]="$SAMFILE[i-1]_syri.out" 
+done
 
-cat /genomes.txt
+#construct geneomes.txt file on the fly and plotsr cmd
+CMDSTR=""
+for i {0..${#OUTFILE[@]}
+do
+    CMDSTR="$CMDSTR --sr $OUTFILE[i]"
+done
+for i {0..${#FILE[@]}}
+do
+    echo "$FILE[i]\t$LABEL[i]\n" >> genomes.txt
+done
 
-plotsr --sr syri.out --genomes /genomes.txt
+plotsr $CMDSTR --genomes genomes.txt
 
