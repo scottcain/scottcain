@@ -7,6 +7,24 @@ FILE=(
 'hawaiian_nomito.fa'
 'hawaii.fa'
 'wuhan.fa'
+'addisababa.fa'
+'adelaide.fa'
+'altadena.fa'
+'amares.fa'
+'auckland.fa'
+'bristol.fa'
+'hermanville.fa'
+'lakeforestpark.fa'
+'lisbon.fa'
+'madagascar.fa'
+'manuka.fa'
+'paloalto.fa'
+'perreux.fa'
+'roxel.fa'
+'saltlakecity.fa'
+'sanfrancisco.fa'
+'southampton.fa'
+'ulupalakua.fa'
 )
 
 LABEL=(
@@ -15,6 +33,24 @@ LABEL=(
 'CB4856'
 'hawaii'
 'wuhan'
+'addisababa'
+'adelaide'
+'altadena'
+'amares'
+'auckland'
+'bristol'
+'hermanville'
+'lakeforestpark'
+'lisbon'
+'madagascar'
+'manuka'
+'paloalto'
+'perreux'
+'roxel'
+'saltlakecity'
+'sanfrancisco'
+'southampton'
+'ulupalakua'
 )
 let LENGTH=${#FILE[@]}
 let SHORT=$LENGTH-1
@@ -46,7 +82,6 @@ done
 
 #construct geneomes.txt file on the fly and plotsr cmd
 CMDSTR=""
-rm genomes.txt
 for (( i=0 ; i<=$SHORT-1 ; i++  )) 
 do
     CMDSTR="${CMDSTR} --sr ${OUTFILE[i]}"
