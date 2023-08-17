@@ -21,6 +21,9 @@ let SHORT=$LENGTH-1
 
 cd /data
 
+# clean up--remove everything but fastas
+rm -f *.sam *.vcf *.txt *.log *.summary *.out
+
 SAMFILE=()
 for (( i=1 ; i<=$SHORT ; i++  ))
 do
