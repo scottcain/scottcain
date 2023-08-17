@@ -1,2 +1,2 @@
-n2_nomito.fa	n2
-vc2010_nomito.fa	vc2010
+/data/n2_nomito.fa	n2
+/data/vc2010_nomito.fa	vc2010
