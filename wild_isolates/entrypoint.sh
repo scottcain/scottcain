@@ -3,7 +3,7 @@ set -euo pipefail
 
 FILE=(
 'n2_nomito.fa'
-'vc_2010_nomito.fa'
+'vc2010_nomito.fa'
 'hawaiian_nomito.fa'
 'hawaii.fa'
 'wuhan.fa'
@@ -16,14 +16,16 @@ LABEL=(
 'hawaii'
 'wuhan'
 )
+let LENGTH=${#FILE[@]}
+let SHORT=$LENGTH-1
 
 cd /data
 
 SAMFILE=()
-for i {1..${#FILE[@]}}
+for (( i=1 ; i<=$SHORT ; i++  ))
 do
-    minimap2 --eqx -ax asm5 -a $FILE[i-1] $FILE[i]  > "r_$LABEL[i-1]_q_$LABEL[i].sam"
-    $SAMFILE[i-1]="r_$LABEL[i-1]_q_$LABEL[i].sam"
+    SAMFILE[i-1]="r_${LABEL[i-1]}_q_${LABEL[i]}.sam"
+    minimap2 --eqx -ax asm5 -a ${FILE[i-1]} ${FILE[i]}  > ${SAMFILE[i-1]}
 done
 
 set +euo pipefail
@@ -32,26 +34,24 @@ source /root/.bashrc
 conda activate syri_env
 set -euo pipefail
 
-mkdir tmp
-cd tmp
-
 OUTFILE=()
-for i {1..${#FILE[@]}}
+for (( i=1 ; i<=$SHORT ; i++  ))
 do
-    syri -c $SAMFILE[i-1] -F S -r $FILE[i-1] -q $FILE[i] --prefix "$SAMFILE[i-1]_"
-    $OUTFILE[i-1]="$SAMFILE[i-1]_syri.out" 
+    syri -c ${SAMFILE[i-1]} -F S -r ${FILE[i-1]} -q ${FILE[i]} --prefix "${SAMFILE[i-1]}_"
+    OUTFILE[i-1]="${SAMFILE[i-1]}_syri.out" 
 done
 
 #construct geneomes.txt file on the fly and plotsr cmd
 CMDSTR=""
-for i {0..${#OUTFILE[@]}
+rm genomes.txt
+for (( i=0 ; i<=$SHORT-1 ; i++  )) 
 do
-    CMDSTR="$CMDSTR --sr $OUTFILE[i]"
+    CMDSTR="${CMDSTR} --sr ${OUTFILE[i]}"
 done
-for i {0..${#FILE[@]}}
+for (( i=0 ; i<=$SHORT ; i++  ))
 do
-    echo "$FILE[i]\t$LABEL[i]\n" >> genomes.txt
+    echo -e "${FILE[i]}\t${LABEL[i]}" >> genomes.txt
 done
 
-plotsr $CMDSTR --genomes genomes.txt
+plotsr ${CMDSTR} --genomes genomes.txt
 
