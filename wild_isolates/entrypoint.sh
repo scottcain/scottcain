@@ -58,13 +58,15 @@ let SHORT=$LENGTH-1
 cd /data
 
 # clean up--remove everything but fastas
-rm -f *.sam *.vcf *.txt *.log *.summary *.out
+#rm -f *.sam *.vcf *.txt *.log *.summary *.out
 
 SAMFILE=()
 for (( i=1 ; i<=$SHORT ; i++  ))
 do
     SAMFILE[i-1]="r_${LABEL[i-1]}_q_${LABEL[i]}.sam"
-    minimap2 --eqx -ax asm5 -a ${FILE[i-1]} ${FILE[i]}  > ${SAMFILE[i-1]}
+    PAFFILE="r_${LABEL[i-1]}_q_${LABEL[i]}.paf"
+#    minimap2 --eqx -ax asm5 -a ${FILE[i-1]} ${FILE[i]}  > ${SAMFILE[i-1]}
+    minimap2 -c ${FILE[i-1]} ${FILE[i]}  > ${PAFFILE}
 done
 
 set +euo pipefail
@@ -76,11 +78,12 @@ set -euo pipefail
 OUTFILE=()
 for (( i=1 ; i<=$SHORT ; i++  ))
 do
-    syri -c ${SAMFILE[i-1]} -F S -r ${FILE[i-1]} -q ${FILE[i]} --prefix "${SAMFILE[i-1]}_"
+#    syri -c ${SAMFILE[i-1]} -F S -r ${FILE[i-1]} -q ${FILE[i]} --prefix "${SAMFILE[i-1]}_"
     OUTFILE[i-1]="${SAMFILE[i-1]}_syri.out" 
 done
 
 #construct geneomes.txt file on the fly and plotsr cmd
+rm -f genomes.txt
 CMDSTR=""
 for (( i=0 ; i<=$SHORT-1 ; i++  )) 
 do
@@ -91,5 +94,6 @@ do
     echo -e "${FILE[i]}\t${LABEL[i]}" >> genomes.txt
 done
 
-plotsr ${CMDSTR} --genomes genomes.txt
+plotsr ${CMDSTR} -H 28 -W 15 --genomes genomes.txt -o plotsr.png
+
 
