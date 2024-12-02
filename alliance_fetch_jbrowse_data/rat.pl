@@ -17,21 +17,30 @@ while (my $file = <DATA>) {
     $underscore_file =~ s/\(/\\\(/g;
     $underscore_file =~ s/\)/\\\)/g;
 
+    my $uri_escaped_file = $file;
+    $uri_escaped_file =~ s/ /%20/g;
+    $uri_escaped_file =~ s/\(/\\\(/g;
+    $uri_escaped_file =~ s/\)/\\\)/g;
+
     warn $underscore_file;
+    warn $uri_escaped_file;
 
-    #  my $fullurl = $URL . $PATH . $file;
-    #`curl -O $fullurl`;
+    my $fullurl = $URL . $PATH . $uri_escaped_file;
+    `curl -O $fullurl`;
 
-    #    `mv $file $underscore_file`;
+    `mv $uri_escaped_file $underscore_file`;
 
-    #`aws s3 cp --acl public-read $underscore_file s3://agrjbrowse/MOD-jbrowses/human/`;
+    `aws s3 cp --acl public-read $underscore_file s3://agrjbrowse/MOD-jbrowses/RGD/rn7.2/`;
 
-    #sleep 30;
+    unlink $underscore_file;
+
+    sleep 63;
 
 }
 
 
 __DATA__
+WN_N (2020).gff3.sorted.gff.gz.tbi
 Animal Diseases Related Genes.gff3.gz
 Animal Diseases Related Genes.gff3.gz.tbi
 Animal Diseases Related QTLs.gff3.gz
@@ -721,4 +730,3 @@ WKY_N (2020).gff3.sorted.gff.gz.tbi
 WKY_NCrl (2019).gff3.sorted.gff.gz
 WKY_NCrl (2019).gff3.sorted.gff.gz.tbi
 WN_N (2020).gff3.sorted.gff.gz
-WN_N (2020).gff3.sorted.gff.gz.tbi
